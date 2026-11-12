@@ -170,14 +170,15 @@
 const SUPABASE_URL = "https://hnninqcqlsxiobbpbtmg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_OZiYM9UVLlQTysV_j3HbUQ_5YiWvEcf";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const SECTORS = [
-  { id: "headtalk", name: "Head Talk Promotional Video" },
-  { id: "promo", name: "Professional Promotion Video" },
-  { id: "re-promo", name: "Real Estate Promotional" },
-  { id: "re-pro", name: "Real Estate Professional" },
-  { id: "ai-editor", name: "AI Video Editor" },
-  { id: "cinematic", name: "Cinematic Documentary" },
-  { id: "motion", name: "Motion Graphic" }
+  { id: "head talk promotional video", name: "Head Talk Promotional Video" },
+  { id: "professional promotion video", name: "Professional Promotion Video" },
+  { id: "real estate promotional", name: "Real Estate Promotional" },
+  { id: "real estate professional", name: "Real Estate Professional" },
+  { id: "ai video editor", name: "AI Video Editor" },
+  { id: "cinematic documentory", name: "Cinematic Documentary" },
+  { id: "motion graphic", name: "Motion Graphic" }
 ];
 const $ = selector => document.querySelector(selector);
 const el = (tag, cls, text) => {
