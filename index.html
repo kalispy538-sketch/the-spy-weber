@@ -236,17 +236,24 @@ function renderSectors() {
 }
 
 async function loadVideos() {
+  // Render categories immediately
+  renderSectors();
+
   const { data, error } = await db.from("spyweber_videos")
     .select("id,title,sector,youtube_id,created_at")
     .order("created_at", { ascending: false });
+
   if (error) {
     console.error(error);
-    $("#sectors").replaceChildren(el("p", "empty", "Videos could not be loaded. Please check the database setup."));
+    // Keep dropdown categories visible
     return;
   }
+
   videos = Array.isArray(data) ? data : [];
+
   renderSectors();
 }
+
 loadVideos();
 </script>
 
