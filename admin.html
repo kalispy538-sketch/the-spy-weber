@@ -1,434 +1,491 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portfolio Admin | Rahat Ahmed</title>
+  <title>The Spy Weber | Admin Panel</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       min-height: 100vh;
-      padding: 40px 16px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #0b0b0d;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      padding: 35px 16px;
+      font-family: Arial, sans-serif;
+      background: #080808;
+      color: #fff;
     }
 
     .container {
       width: 100%;
-      max-width: 920px;
-      padding: 28px 32px;
-      background-color: #111114;
-      border: 1px dashed rgba(239, 68, 68, 0.45);
-      border-radius: 14px;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
+      max-width: 900px;
+      margin: auto;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 22px;
+      align-items: center;
+      gap: 15px;
       flex-wrap: wrap;
+      margin-bottom: 25px;
     }
 
-    h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: -0.01em;
-    }
+    h1 { font-size: 26px; }
+    h1 span { color: #ef2929; }
 
     .subtitle {
-      margin-top: 6px;
-      font-size: 13.5px;
-      color: #9ca3af;
-      line-height: 1.45;
+      color: #999;
+      font-size: 13px;
+      margin-top: 7px;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .panel {
+      background: #121212;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
     }
 
-    .full-width {
-      grid-column: 1 / -1;
+    h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
     }
 
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .field {
+      margin-bottom: 15px;
     }
 
     label {
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #a1a1aa;
+      display: block;
+      color: #aaa;
+      font-size: 13px;
+      margin-bottom: 7px;
     }
 
-    input,
-    select,
-    textarea {
+    input, select {
       width: 100%;
-      padding: 13px 15px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #f4f4f5;
-      background-color: #16161a;
-      border: 1px solid #27272a;
-      border-radius: 9px;
+      padding: 13px;
+      border: 1px solid #333;
+      border-radius: 7px;
+      background: #1b1b1b;
+      color: #fff;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      font-size: 14px;
     }
 
-    input::placeholder,
-    textarea::placeholder {
-      color: #71717a;
+    input:focus, select:focus {
+      border-color: #ed2929;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
-    }
-
-    select {
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e4e4e7' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 38px;
-      cursor: pointer;
-    }
-
-    select option {
-      background-color: #09090b;
-      color: #ffffff;
-      padding: 10px;
-    }
-
-    textarea {
-      min-height: 92px;
-      resize: vertical;
-    }
-
-    input[type="file"] {
-      padding: 10px 12px;
-      color: #a1a1aa;
-      cursor: pointer;
-    }
-
-    input[type="file"]::file-selector-button {
-      margin-right: 12px;
-      padding: 7px 12px;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #ffffff;
-      background-color: #27272a;
-      border: 1px solid #3f3f46;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    input[type="file"]::file-selector-button:hover {
-      background-color: #3f3f46;
-    }
-
-    .note {
-      font-size: 12px;
-      color: #71717a;
-      margin-top: 2px;
-    }
-
-    .btn-primary {
-      width: 100%;
-      margin-top: 16px;
-      padding: 14px 20px;
-      font-size: 14.5px;
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 12px 18px;
+      font-size: 14px;
       font-weight: 700;
-      color: #ffffff;
-      background-color: #ef2323;
-      border: none;
-      border-radius: 9px;
       cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
     }
 
-    .btn-primary:hover {
-      background-color: #dc2626;
+    .primary {
+      width: 100%;
+      background: #ed2929;
+      color: white;
     }
 
-    .btn-primary:active {
-      transform: scale(0.995);
+    .primary:hover { background: #c91e1e; }
+
+    .logout {
+      background: #292929;
+      color: white;
     }
 
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .delete {
+      background: #b91c1c;
+      color: white;
+      padding: 8px 12px;
+      font-size: 12px;
     }
 
-    .btn-logout {
-      padding: 8px 14px;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #d4d4d8;
-      background-color: #1c1c21;
-      border: 1px solid #2e2e34;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.2s, color 0.2s;
-    }
-
-    .btn-logout:hover {
-      background-color: #27272a;
-      color: #ffffff;
-    }
-
-    #uploadSection {
-      display: none;
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
 
     #status {
-      margin-top: 14px;
-      font-size: 13.5px;
-      font-weight: 500;
+      margin-top: 15px;
+      font-size: 13px;
       overflow-wrap: anywhere;
-      min-height: 18px;
     }
 
-    @media (max-width: 680px) {
-      .container {
-        padding: 22px 18px;
-      }
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
+    .video-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 0;
+      border-bottom: 1px solid #292929;
+    }
+
+    .video-info { min-width: 0; }
+
+    .video-title {
+      font-size: 14px;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .video-category {
+      color: #ef4444;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .video-link {
+      display: inline-block;
+      color: #999;
+      font-size: 12px;
+      margin-top: 6px;
+      text-decoration: none;
+    }
+
+    .video-link:hover { color: white; }
+
+    .empty {
+      color: #888;
+      font-size: 13px;
+      padding: 10px 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #ef4444;
+      text-decoration: none;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    @media(max-width: 600px) {
+      .panel { padding: 18px; }
+      h1 { font-size: 22px; }
+      .video-item { align-items: flex-start; }
     }
   </style>
 </head>
+
 <body>
   <main class="container">
+
     <div class="header">
       <div>
-        <h1>Admin Panel</h1>
-        <p class="subtitle">Rahat Ahmed — Manage and upload portfolio projects. Visible only to the page owner and editors.</p>
+        <h1>THE SPY <span>WEBER</span></h1>
+        <p class="subtitle">Video Production — Admin Dashboard</p>
       </div>
-      <button id="logoutBtn" class="btn-logout hidden" type="button">Logout</button>
+      <button id="logoutBtn" class="logout hidden">Logout</button>
     </div>
 
-    <!-- Login Section -->
-    <section id="loginSection">
-      <div class="form-grid">
-        <div class="field-group">
-          <input id="email" type="email" placeholder="Admin Email" autocomplete="username">
-        </div>
-        <div class="field-group">
-          <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-        </div>
+    <!-- LOGIN -->
+    <section id="loginSection" class="panel">
+      <h2>Admin Login</h2>
+
+      <div class="field">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="Admin email">
       </div>
-      <button id="loginBtn" class="btn-primary" type="button">Login to Admin Panel</button>
-      <p class="note" style="margin-top: 10px;">Sign in with your Supabase Authentication account.</p>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Password">
+      </div>
+
+      <button id="loginBtn" class="primary">Login to Admin Panel</button>
     </section>
 
-    <!-- Upload Section -->
-    <section id="uploadSection">
-      <div class="form-grid">
-        <div class="field-group full-width">
-          <input id="title" type="text" placeholder="Project title (e.g. Excel Sales Dashboard)">
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="hidden">
+
+      <div class="panel">
+        <h2>Add New Video</h2>
+
+        <div class="field">
+          <label>Video Title</label>
+          <input id="title" type="text" placeholder="Enter video title">
         </div>
 
-        <div class="field-group">
-          <select id="category">
-            <option>AI Development</option>
-            <option>Excel &amp; Google Sheets</option>
-            <option>Data Entry &amp; Management</option>
-            <option>Graphic Design</option>
-            <option>Video Editing</option>
-            <option>Office Productivity</option>
+        <div class="field">
+          <label>Video Category</label>
+          <select id="sector">
+            <option value="headtalk">Headtalk</option>
+            <option value="promo">Promo</option>
+            <option value="re-promo">Re-Promo</option>
+            <option value="re-pro">Re-Pro</option>
+            <option value="ai-editor">AI Editor</option>
+            <option value="cinematic">Cinematic</option>
+            <option value="motion">Motion</option>
           </select>
         </div>
 
-        <div id="singleFileGroup" class="field-group">
-          <input id="projectFile" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,application/pdf">
-          <span class="note">JPG, PNG, WEBP, MP4 or PDF (Max 50 MB)</span>
+        <div class="field">
+          <label>YouTube Video Link</label>
+          <input id="youtube" type="url"
+            placeholder="https://www.youtube.com/watch?v=VIDEO_ID">
         </div>
 
-        <div id="excelFileGroup" class="field-group hidden">
-          <input id="previewFile" type="file" accept="image/jpeg,image/png,image/webp" title="Dashboard Preview Image">
-          <span class="note">Dashboard Preview Image (JPG, PNG, WEBP)</span>
-        </div>
+        <button id="addBtn" class="primary">Add Video</button>
+        <p id="status" role="status"></p>
+      </div>
 
-        <div id="excelWorkbookGroup" class="field-group full-width hidden">
-          <input id="workbookFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" title="Excel Workbook (.xlsx)">
-          <span class="note">Actual Excel Workbook (.xlsx) — Max 50 MB per file</span>
-        </div>
-
-        <div class="field-group full-width">
-          <textarea id="description" placeholder="Project description..."></textarea>
+      <div class="panel">
+        <h2>Uploaded Videos</h2>
+        <div id="videoList">
+          <p class="empty">Loading videos...</p>
         </div>
       </div>
 
-      <button id="uploadBtn" class="btn-primary" type="button">Save &amp; Upload Project</button>
     </section>
 
-    <p id="status" role="status"></p>
+    <a class="back-link" href="../">← Back to Website</a>
+
   </main>
 
   <script>
-   const URL = "https://hnninqcqlsxiobbpbtmg.supabase.co",
-      KEY = "sb_publishable_OZiYM9UVLlQTysV_j3HbUQ_5YiWvEcf",
-          XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          MAX = 50 * 1024 * 1024;
+    const SUPABASE_URL = "https://hnninqcqlsxiobbpbtmg.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_OZiYM9UVLlQTysV_j3HbUQ_5YiWvEcf";
 
-    const db = window.supabase.createClient(URL, KEY),
-          $ = id => document.getElementById(id);
+    const db = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
-    function msg(t, err = false) {
-      $("status").textContent = t;
-      $("status").style.color = err ? "#f87171" : "#4ade80";
+    const $ = id => document.getElementById(id);
+
+    function message(text, error = false) {
+      $("status").textContent = text;
+      $("status").style.color = error ? "#ff7777" : "#4ade80";
     }
 
-    function fields() {
-      let x = $("category").value === "Excel & Google Sheets";
-      $("singleFileGroup").classList.toggle("hidden", x);
-      $("excelFileGroup").classList.toggle("hidden", !x);
-      $("excelWorkbookGroup").classList.toggle("hidden", !x);
-      $("projectFile").required = !x;
-      $("previewFile").required = x;
-      $("workbookFile").required = x;
-    }
-
-    $("category").addEventListener("change", fields);
-
-    async function screen() {
-      let { data, error } = await db.auth.getSession();
-      if (error) {
-        msg(error.message, true);
-        return;
-      }
-      let yes = !!data.session;
-      $("loginSection").style.display = yes ? "none" : "block";
-      $("uploadSection").style.display = yes ? "block" : "none";
-      $("logoutBtn").classList.toggle("hidden", !yes);
-    }
-
-    $("loginBtn").onclick = async () => {
-      let email = $("email").value.trim(),
-          password = $("password").value;
-      if (!email || !password) return msg("Enter email and password.", true);
+    function getYoutubeId(value) {
       try {
-        let { error } = await db.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        $("password").value = "";
-        await screen();
-        msg("Login successful.");
-      } catch (e) {
-        msg(e.message, true);
-      }
-    };
+        const url = new URL(value.trim());
 
-    async function upload(file, prefix) {
-      if (!file) throw Error("Select all required files.");
-      if (file.size > MAX) throw Error(file.name + " exceeds 50 MB.");
-      let name = file.name.replace(/[^a-zA-Z0-9._-]/g, "_"),
-          path = crypto.randomUUID() + "-" + prefix + "-" + name;
-      let { error } = await db.storage.from("portfolio-projects").upload(path, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type || (name.endsWith(".xlsx") ? XLSX : undefined)
-      });
-      if (error) throw error;
-      return db.storage.from("portfolio-projects").getPublicUrl(path).data.publicUrl;
-    }
+        let id = "";
 
-    $("uploadBtn").onclick = async () => {
-      let b = $("uploadBtn");
-      b.disabled = true;
-      try {
-        let { data, error } = await db.auth.getSession();
-        if (error) throw error;
-        if (!data.session) throw Error("Please log in first.");
-
-        let title = $("title").value.trim(),
-            category = $("category").value,
-            description = $("description").value.trim();
-
-        if (!title) throw Error("Enter project title.");
-
-        let file_url, workbook_url = null;
-
-        if (category === "Excel & Google Sheets") {
-          let preview = $("previewFile").files[0],
-              book = $("workbookFile").files[0];
-          if (!preview || !book) throw Error("Select both preview image and .xlsx workbook.");
-          if (!["image/jpeg", "image/png", "image/webp"].includes(preview.type)) {
-            throw Error("Preview must be JPG, PNG or WEBP.");
+        if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") {
+          id = url.pathname.split("/").filter(Boolean)[0] || "";
+        } else if (
+          url.hostname === "youtube.com" ||
+          url.hostname === "www.youtube.com" ||
+          url.hostname === "m.youtube.com" ||
+          url.hostname === "youtube-nocookie.com" ||
+          url.hostname === "www.youtube-nocookie.com"
+        ) {
+          if (url.pathname === "/watch") {
+            id = url.searchParams.get("v") || "";
+          } else {
+            const parts = url.pathname.split("/").filter(Boolean);
+            if (["embed", "shorts", "live"].includes(parts[0])) {
+              id = parts[1] || "";
+            }
           }
-          if (!(book.name.toLowerCase().endsWith(".xlsx") || book.type === XLSX)) {
-            throw Error("Workbook must be .xlsx.");
-          }
-          msg("Uploading dashboard image...");
-          file_url = await upload(preview, "preview");
-          msg("Uploading Excel workbook...");
-          workbook_url = await upload(book, "workbook");
-        } else {
-          let f = $("projectFile").files[0];
-          if (!f) throw Error("Select a project file.");
-          if (!["image/jpeg", "image/png", "image/webp", "video/mp4", "application/pdf"].includes(f.type)) {
-            throw Error("Unsupported file type.");
-          }
-          msg("Uploading project...");
-          file_url = await upload(f, "project");
         }
 
-        let record = { title, category, description, file_url };
-        if (workbook_url) record.workbook_url = workbook_url;
+        return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
+      } catch {
+        return null;
+      }
+    }
 
-        msg("Saving project details...");
-        let { error: saveError } = await db.from("projects").insert(record);
-        if (saveError) throw Error("Upload completed but database save failed: " + saveError.message);
+    function showScreen(session) {
+      $("loginSection").classList.toggle("hidden", !!session);
+      $("dashboard").classList.toggle("hidden", !session);
+      $("logoutBtn").classList.toggle("hidden", !session);
+
+      if (session) loadVideos();
+    }
+
+    async function checkSession() {
+      const { data, error } = await db.auth.getSession();
+
+      if (error) {
+        message(error.message, true);
+        return;
+      }
+
+      showScreen(data.session);
+    }
+
+    $("loginBtn").addEventListener("click", async () => {
+      const email = $("email").value.trim();
+      const password = $("password").value;
+
+      if (!email || !password) {
+        alert("Enter your email and password.");
+        return;
+      }
+
+      $("loginBtn").disabled = true;
+
+      const { error } = await db.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      $("loginBtn").disabled = false;
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      $("password").value = "";
+      await checkSession();
+    });
+
+    $("password").addEventListener("keydown", event => {
+      if (event.key === "Enter") $("loginBtn").click();
+    });
+
+    $("logoutBtn").addEventListener("click", async () => {
+      const { error } = await db.auth.signOut();
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      showScreen(null);
+    });
+
+    async function loadVideos() {
+      $("videoList").innerHTML =
+        '<p class="empty">Loading videos...</p>';
+
+      const { data, error } = await db
+        .from("spyweber_videos")
+        .select("id,title,sector,youtube_id,created_at")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        $("videoList").textContent =
+          "Could not load videos: " + error.message;
+        return;
+      }
+
+      $("videoList").replaceChildren();
+
+      if (!data || data.length === 0) {
+        $("videoList").innerHTML =
+          '<p class="empty">No videos added yet.</p>';
+        return;
+      }
+
+      data.forEach(video => {
+        const item = document.createElement("div");
+        item.className = "video-item";
+
+        const info = document.createElement("div");
+        info.className = "video-info";
+
+        const title = document.createElement("div");
+        title.className = "video-title";
+        title.textContent = video.title;
+
+        const category = document.createElement("div");
+        category.className = "video-category";
+        category.textContent = video.sector;
+
+        const link = document.createElement("a");
+        link.className = "video-link";
+        link.href = "https://www.youtube.com/watch?v=" +
+          encodeURIComponent(video.youtube_id);
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Watch on YouTube";
+
+        info.append(title, category, link);
+
+        const remove = document.createElement("button");
+        remove.className = "delete";
+        remove.textContent = "Delete";
+
+        remove.addEventListener("click", () => deleteVideo(video.id));
+
+        item.append(info, remove);
+        $("videoList").append(item);
+      });
+    }
+
+    $("addBtn").addEventListener("click", async () => {
+      const button = $("addBtn");
+      const title = $("title").value.trim();
+      const sector = $("sector").value;
+      const youtubeId = getYoutubeId($("youtube").value);
+
+      if (!title) {
+        message("Please enter a video title.", true);
+        return;
+      }
+
+      if (!youtubeId) {
+        message("Please enter a valid YouTube video link.", true);
+        return;
+      }
+
+      button.disabled = true;
+      message("Adding video...");
+
+      try {
+        const { data: sessionData, error: sessionError } =
+          await db.auth.getSession();
+
+        if (sessionError) throw sessionError;
+        if (!sessionData.session) throw new Error("Please login first.");
+
+        const { error } = await db
+          .from("spyweber_videos")
+          .insert({
+            title: title,
+            sector: sector,
+            youtube_id: youtubeId
+          });
+
+        if (error) throw error;
 
         $("title").value = "";
-        $("description").value = "";
-        $("projectFile").value = "";
-        $("previewFile").value = "";
-        $("workbookFile").value = "";
-        msg("Project uploaded successfully!");
-      } catch (e) {
-        msg(e.message || "Upload failed.", true);
+        $("youtube").value = "";
+
+        message("Video added successfully!");
+        await loadVideos();
+
+      } catch (error) {
+        message(error.message || "Could not add video.", true);
       } finally {
-        b.disabled = false;
+        button.disabled = false;
       }
-    };
+    });
 
-    $("logoutBtn").onclick = async () => {
-      let { error } = await db.auth.signOut();
-      if (error) return msg(error.message, true);
-      await screen();
-      msg("Logged out.");
-    };
+    async function deleteVideo(id) {
+      if (!confirm("Are you sure you want to delete this video?")) return;
 
-    fields();
-    screen();
+      const { error } = await db
+        .from("spyweber_videos")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        alert("Delete failed: " + error.message);
+        return;
+      }
+
+      message("Video deleted successfully.");
+      await loadVideos();
+    }
+
+    db.auth.onAuthStateChange((_event, session) => {
+      showScreen(session);
+    });
+
+    checkSession();
   </script>
 </body>
 </html>
