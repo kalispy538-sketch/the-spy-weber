@@ -1,27 +1,434 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Spy Weber | Admin Panel</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{--bg:#080808;--panel:#151515;--red:#e50914;--muted:#aaa;--line:#303030}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font:15px Arial,sans-serif;min-height:100vh}.wrap{max-width:900px;margin:48px auto;padding:20px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:28px}.brand{font-size:25px;font-weight:800;letter-spacing:1px}.brand span{color:var(--red)}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:25px;margin:18px 0}h1{font-size:26px;margin:0 0 8px}h2{font-size:19px;margin:0 0 18px}.muted{color:var(--muted)}label{display:block;margin:14px 0 7px;color:#ddd}input,select{width:100%;padding:13px;border-radius:7px;border:1px solid #444;background:#090909;color:#fff;font-size:15px}button,.link{display:inline-block;border:0;border-radius:7px;padding:12px 18px;background:var(--red);color:white;font-weight:700;cursor:pointer;text-decoration:none;margin-top:16px}button.secondary{background:#333}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.item{border-top:1px solid var(--line);padding:15px 0;display:flex;justify-content:space-between;gap:15px;align-items:center}.item small{display:block;color:var(--muted);margin-top:5px}.hidden{display:none}.status{margin-top:12px;color:#ff7777;white-space:pre-wrap}.status.ok{color:#75d68a}@media(max-width:600px){.wrap{margin:15px auto}.row{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
-</style></head>
-<body><main class="wrap">
-<header class="top"><div class="brand">THE SPY <span>WEBER</span> <small style="font-size:12px;color:#aaa">ADMIN</small></div><a class="link" href="../">View Website</a></header>
-<section id="loginBox" class="panel"><h1>Admin Login</h1><p class="muted">Sign in with your existing administrator account.</p><label>Email</label><input id="email" type="email" autocomplete="username" placeholder="Admin email"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password"><button id="loginBtn">Login</button><div id="loginStatus" class="status"></div></section>
-<section id="manager" class="hidden"><div class="panel"><h1>Video Manager</h1><p class="muted">Add a YouTube video to a category on the public website.</p><label>Video title</label><input id="title" placeholder="Enter video title"><div class="row"><div><label>Category</label><select id="sector"><option value="headtalk">Head Talk</option><option value="promo">Promo</option><option value="re-promo">Re-Promo</option><option value="re-pro">Re-Pro</option><option value="ai-editor">AI Editor</option><option value="cinematic">Cinematic</option><option value="motion">Motion</option></select></div><div><label>YouTube video URL or ID</label><input id="youtube" placeholder="https://www.youtube.com/watch?v=..."></div></div><button id="addBtn">Add Video</button><button id="logoutBtn" class="secondary">Logout</button><div id="managerStatus" class="status"></div></div>
-<div class="panel"><h2>Uploaded Videos</h2><div id="videoList" class="muted">Loading videos…</div></div></section>
-</main><script>
-const SUPABASE_URL='https://inaazsmabgptpjckugwn.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_yBaRrATND_tJx4JXsIPAyA__LggH--V';
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-const $=id=>document.getElementById(id);function status(id,msg,ok=false){$(id).textContent=msg;$(id).className='status'+(ok?' ok':'')}
-function getYoutubeId(value){value=value.trim();if(/^[\w-]{11}$/.test(value))return value;try{const u=new URL(value);if(u.hostname.includes('youtu.be'))return u.pathname.slice(1).split('/')[0];if(u.searchParams.get('v'))return u.searchParams.get('v');const m=u.pathname.match(/\/embed\/([\w-]{11})/);return m?m[1]:null}catch{return null}}
-async function showSession(){const {data:{session}}=await db.auth.getSession();$('loginBox').classList.toggle('hidden',!!session);$('manager').classList.toggle('hidden',!session);if(session)loadVideos()}
-$('loginBtn').onclick=async()=>{status('loginStatus','Signing in…');const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){status('loginStatus',error.message);return}status('loginStatus','Login successful',true);await showSession()};
-$('logoutBtn').onclick=async()=>{await db.auth.signOut();$('manager').classList.add('hidden');$('loginBox').classList.remove('hidden')};
-$('addBtn').onclick=async()=>{const title=$('title').value.trim(),sector=$('sector').value,youtube_id=getYoutubeId($('youtube').value);if(!title||!youtube_id){status('managerStatus','Enter a title and a valid YouTube URL or 11-character video ID.');return}status('managerStatus','Saving…');const {error}=await db.from('spyweber_videos').insert({title,sector,youtube_id});if(error){status('managerStatus',error.message);return}$('title').value='';$('youtube').value='';status('managerStatus','Video added successfully.',true);loadVideos()};
-async function loadVideos(){const box=$('videoList');box.textContent='Loading…';const {data,error}=await db.from('spyweber_videos').select('id,title,sector,youtube_id,created_at').order('created_at',{ascending:false});if(error){box.textContent=error.message;return}if(!data.length){box.textContent='No videos added yet.';return}box.innerHTML='';for(const v of data){const item=document.createElement('div');item.className='item';const info=document.createElement('div');const strong=document.createElement('strong');strong.textContent=v.title;const small=document.createElement('small');small.textContent=v.sector+' · '+v.youtube_id;info.append(strong,small);const del=document.createElement('button');del.textContent='Delete';del.className='secondary';del.onclick=async()=>{if(!confirm('Delete this video?'))return;const {error}=await db.from('spyweber_videos').delete().eq('id',v.id);if(error){status('managerStatus',error.message);return}loadVideos()};item.append(info,del);box.append(item)}}
-db.auth.onAuthStateChange((_event,session)=>{if(session)showSession()});showSession();
-</script></body></html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Admin | Rahat Ahmed</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 40px 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0b0b0d;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 920px;
+      padding: 28px 32px;
+      background-color: #111114;
+      border: 1px dashed rgba(239, 68, 68, 0.45);
+      border-radius: 14px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      font-size: 13.5px;
+      color: #9ca3af;
+      line-height: 1.45;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #a1a1aa;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 13px 15px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #f4f4f5;
+      background-color: #16161a;
+      border: 1px solid #27272a;
+      border-radius: 9px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #71717a;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e4e4e7' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+      cursor: pointer;
+    }
+
+    select option {
+      background-color: #09090b;
+      color: #ffffff;
+      padding: 10px;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      padding: 10px 12px;
+      color: #a1a1aa;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      margin-right: 12px;
+      padding: 7px 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #ffffff;
+      background-color: #27272a;
+      border: 1px solid #3f3f46;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background-color: #3f3f46;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #71717a;
+      margin-top: 2px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px 20px;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #ffffff;
+      background-color: #ef2323;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover {
+      background-color: #dc2626;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.995);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-logout {
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #d4d4d8;
+      background-color: #1c1c21;
+      border: 1px solid #2e2e34;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .btn-logout:hover {
+      background-color: #27272a;
+      color: #ffffff;
+    }
+
+    #uploadSection {
+      display: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #status {
+      margin-top: 14px;
+      font-size: 13.5px;
+      font-weight: 500;
+      overflow-wrap: anywhere;
+      min-height: 18px;
+    }
+
+    @media (max-width: 680px) {
+      .container {
+        padding: 22px 18px;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="header">
+      <div>
+        <h1>Admin Panel</h1>
+        <p class="subtitle">Rahat Ahmed — Manage and upload portfolio projects. Visible only to the page owner and editors.</p>
+      </div>
+      <button id="logoutBtn" class="btn-logout hidden" type="button">Logout</button>
+    </div>
+
+    <!-- Login Section -->
+    <section id="loginSection">
+      <div class="form-grid">
+        <div class="field-group">
+          <input id="email" type="email" placeholder="Admin Email" autocomplete="username">
+        </div>
+        <div class="field-group">
+          <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+        </div>
+      </div>
+      <button id="loginBtn" class="btn-primary" type="button">Login to Admin Panel</button>
+      <p class="note" style="margin-top: 10px;">Sign in with your Supabase Authentication account.</p>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="uploadSection">
+      <div class="form-grid">
+        <div class="field-group full-width">
+          <input id="title" type="text" placeholder="Project title (e.g. Excel Sales Dashboard)">
+        </div>
+
+        <div class="field-group">
+          <select id="category">
+            <option>AI Development</option>
+            <option>Excel &amp; Google Sheets</option>
+            <option>Data Entry &amp; Management</option>
+            <option>Graphic Design</option>
+            <option>Video Editing</option>
+            <option>Office Productivity</option>
+          </select>
+        </div>
+
+        <div id="singleFileGroup" class="field-group">
+          <input id="projectFile" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,application/pdf">
+          <span class="note">JPG, PNG, WEBP, MP4 or PDF (Max 50 MB)</span>
+        </div>
+
+        <div id="excelFileGroup" class="field-group hidden">
+          <input id="previewFile" type="file" accept="image/jpeg,image/png,image/webp" title="Dashboard Preview Image">
+          <span class="note">Dashboard Preview Image (JPG, PNG, WEBP)</span>
+        </div>
+
+        <div id="excelWorkbookGroup" class="field-group full-width hidden">
+          <input id="workbookFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" title="Excel Workbook (.xlsx)">
+          <span class="note">Actual Excel Workbook (.xlsx) — Max 50 MB per file</span>
+        </div>
+
+        <div class="field-group full-width">
+          <textarea id="description" placeholder="Project description..."></textarea>
+        </div>
+      </div>
+
+      <button id="uploadBtn" class="btn-primary" type="button">Save &amp; Upload Project</button>
+    </section>
+
+    <p id="status" role="status"></p>
+  </main>
+
+  <script>
+    const URL = "https://inaazsmabgptpjckugwn.supabase.co",
+          KEY = "sb_publishable_yBaRrATND_tJx4JXsIPAyA__LggH--V",
+          XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          MAX = 50 * 1024 * 1024;
+
+    const db = window.supabase.createClient(URL, KEY),
+          $ = id => document.getElementById(id);
+
+    function msg(t, err = false) {
+      $("status").textContent = t;
+      $("status").style.color = err ? "#f87171" : "#4ade80";
+    }
+
+    function fields() {
+      let x = $("category").value === "Excel & Google Sheets";
+      $("singleFileGroup").classList.toggle("hidden", x);
+      $("excelFileGroup").classList.toggle("hidden", !x);
+      $("excelWorkbookGroup").classList.toggle("hidden", !x);
+      $("projectFile").required = !x;
+      $("previewFile").required = x;
+      $("workbookFile").required = x;
+    }
+
+    $("category").addEventListener("change", fields);
+
+    async function screen() {
+      let { data, error } = await db.auth.getSession();
+      if (error) {
+        msg(error.message, true);
+        return;
+      }
+      let yes = !!data.session;
+      $("loginSection").style.display = yes ? "none" : "block";
+      $("uploadSection").style.display = yes ? "block" : "none";
+      $("logoutBtn").classList.toggle("hidden", !yes);
+    }
+
+    $("loginBtn").onclick = async () => {
+      let email = $("email").value.trim(),
+          password = $("password").value;
+      if (!email || !password) return msg("Enter email and password.", true);
+      try {
+        let { error } = await db.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        $("password").value = "";
+        await screen();
+        msg("Login successful.");
+      } catch (e) {
+        msg(e.message, true);
+      }
+    };
+
+    async function upload(file, prefix) {
+      if (!file) throw Error("Select all required files.");
+      if (file.size > MAX) throw Error(file.name + " exceeds 50 MB.");
+      let name = file.name.replace(/[^a-zA-Z0-9._-]/g, "_"),
+          path = crypto.randomUUID() + "-" + prefix + "-" + name;
+      let { error } = await db.storage.from("portfolio-projects").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || (name.endsWith(".xlsx") ? XLSX : undefined)
+      });
+      if (error) throw error;
+      return db.storage.from("portfolio-projects").getPublicUrl(path).data.publicUrl;
+    }
+
+    $("uploadBtn").onclick = async () => {
+      let b = $("uploadBtn");
+      b.disabled = true;
+      try {
+        let { data, error } = await db.auth.getSession();
+        if (error) throw error;
+        if (!data.session) throw Error("Please log in first.");
+
+        let title = $("title").value.trim(),
+            category = $("category").value,
+            description = $("description").value.trim();
+
+        if (!title) throw Error("Enter project title.");
+
+        let file_url, workbook_url = null;
+
+        if (category === "Excel & Google Sheets") {
+          let preview = $("previewFile").files[0],
+              book = $("workbookFile").files[0];
+          if (!preview || !book) throw Error("Select both preview image and .xlsx workbook.");
+          if (!["image/jpeg", "image/png", "image/webp"].includes(preview.type)) {
+            throw Error("Preview must be JPG, PNG or WEBP.");
+          }
+          if (!(book.name.toLowerCase().endsWith(".xlsx") || book.type === XLSX)) {
+            throw Error("Workbook must be .xlsx.");
+          }
+          msg("Uploading dashboard image...");
+          file_url = await upload(preview, "preview");
+          msg("Uploading Excel workbook...");
+          workbook_url = await upload(book, "workbook");
+        } else {
+          let f = $("projectFile").files[0];
+          if (!f) throw Error("Select a project file.");
+          if (!["image/jpeg", "image/png", "image/webp", "video/mp4", "application/pdf"].includes(f.type)) {
+            throw Error("Unsupported file type.");
+          }
+          msg("Uploading project...");
+          file_url = await upload(f, "project");
+        }
+
+        let record = { title, category, description, file_url };
+        if (workbook_url) record.workbook_url = workbook_url;
+
+        msg("Saving project details...");
+        let { error: saveError } = await db.from("projects").insert(record);
+        if (saveError) throw Error("Upload completed but database save failed: " + saveError.message);
+
+        $("title").value = "";
+        $("description").value = "";
+        $("projectFile").value = "";
+        $("previewFile").value = "";
+        $("workbookFile").value = "";
+        msg("Project uploaded successfully!");
+      } catch (e) {
+        msg(e.message || "Upload failed.", true);
+      } finally {
+        b.disabled = false;
+      }
+    };
+
+    $("logoutBtn").onclick = async () => {
+      let { error } = await db.auth.signOut();
+      if (error) return msg(error.message, true);
+      await screen();
+      msg("Logged out.");
+    };
+
+    fields();
+    screen();
+  </script>
+</body>
+</html>
