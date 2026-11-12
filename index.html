@@ -33,7 +33,14 @@
 
   .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:18px; }
   .vid { background:#000; border-radius:14px; overflow:hidden; border:1px solid var(--line); }
-  .vid .ratio { position:relative; padding-top:56.25%; }
+  .vid .ratio {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding-top: 0;
+  overflow: hidden;
+  background: #000;
+}
   .vid iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
   .vid .t { padding:12px 14px; font-size:15px; font-weight:600; }
 
@@ -220,6 +227,16 @@ const grid = el("div", "grid");
 list.forEach(video => {
   const card = el("div", "vid");
   const ratio = el("div", "ratio");
+  const ratioMap = {
+  "16:9": "16 / 9",
+  "9:16": "9 / 16",
+  "1:1": "1 / 1",
+  "4:3": "4 / 3",
+  "21:9": "21 / 9"
+};
+
+const selectedRatio = video.video_ratio || "auto";
+ratio.style.aspectRatio = ratioMap[selectedRatio] || "16 / 9";
 
   const thumbnail = document.createElement("img");
   thumbnail.src = "https://img.youtube.com/vi/" +
@@ -240,44 +257,21 @@ list.forEach(video => {
 
 
 ratio.addEventListener("click", () => {
-  const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;inset:0;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;padding:65px 12px 15px;";
-
-  const back = document.createElement("button");
-  back.textContent = "← Back";
-  back.style.cssText = "position:absolute;top:15px;left:15px;padding:12px 22px;background:#ed2929;color:white;border:0;border-radius:7px;font-size:16px;z-index:2;";
-
   const frame = document.createElement("iframe");
-  frame.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(video.youtube_id) + "?autoplay=1&playsinline=1&rel=0";
-  frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-  frame.allowFullscreen = true;
-  frame.style.cssText = "width:100%;height:100%;max-width:1200px;max-height:calc(100vh - 90px);border:0;";
 
-  back.onclick = () => {
-    overlay.remove();
-    document.body.style.overflow = "";
-  };
+  frame.src =
+    "https://www.youtube-nocookie.com/embed/" +
+    encodeURIComponent(video.youtube_id) +
+    "?autoplay=1&playsinline=1&controls=1&rel=0";
 
-  overlay.append(back, frame);
-  document.body.append(overlay);
-  document.body.style.overflow = "hidden";
+  frame.allow = "autoplay; encrypted-media; picture-in-picture";
+  frame.allowFullscreen = false;
+
+  frame.style.cssText =
+    "position:absolute;inset:0;width:100%;height:100%;border:0;";
+
+  ratio.replaceChildren(frame);
 });
-
-
-ratio.addEventListener("mouseleave", () => {
-  if (window.matchMedia("(hover: hover)").matches) {
-    stopPreview();
-  }
-});
-
-ratio.addEventListener("click", () => {
-  if (isPlaying) {
-    stopPreview();
-  } else {
-    startPreview();
-  }
-});
-
 
 
   card.append(ratio, el("div", "t", video.title || "Untitled"));
@@ -297,7 +291,7 @@ async function loadVideos() {
   renderSectors();
 
   const { data, error } = await db.from("spyweber_videos")
-    .select("id,title,sector,youtube_id,created_at")
+   .select("id,title,sector,youtube_id,video_ratio,created_at")
     .order("created_at", { ascending: false });
 
   if (error) {
