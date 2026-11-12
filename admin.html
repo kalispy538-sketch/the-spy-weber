@@ -2,490 +2,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Spy Weber | Admin Panel</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Spy Weber | Admin Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      min-height: 100vh;
-      padding: 35px 16px;
-      font-family: Arial, sans-serif;
-      background: #080808;
-      color: #fff;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-bottom: 25px;
-    }
-
-    h1 { font-size: 26px; }
-    h1 span { color: #ef2929; }
-
-    .subtitle {
-      color: #999;
-      font-size: 13px;
-      margin-top: 7px;
-    }
-
-    .panel {
-      background: #121212;
-      border: 1px solid #292929;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
-    }
-
-    h2 {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-
-    .field {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      color: #aaa;
-      font-size: 13px;
-      margin-bottom: 7px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #333;
-      border-radius: 7px;
-      background: #1b1b1b;
-      color: #fff;
-      outline: none;
-      font-size: 14px;
-    }
-
-    input:focus, select:focus {
-      border-color: #ed2929;
-    }
-
-    button {
-      border: 0;
-      border-radius: 7px;
-      padding: 12px 18px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .primary {
-      width: 100%;
-      background: #ed2929;
-      color: white;
-    }
-
-    .primary:hover { background: #c91e1e; }
-
-    .logout {
-      background: #292929;
-      color: white;
-    }
-
-    .delete {
-      background: #b91c1c;
-      color: white;
-      padding: 8px 12px;
-      font-size: 12px;
-    }
-
-    .hidden { display: none !important; }
-
-    #status {
-      margin-top: 15px;
-      font-size: 13px;
-      overflow-wrap: anywhere;
-    }
-
-    .video-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      padding: 15px 0;
-      border-bottom: 1px solid #292929;
-    }
-
-    .video-info { min-width: 0; }
-
-    .video-title {
-      font-size: 14px;
-      font-weight: bold;
-      overflow-wrap: anywhere;
-    }
-
-    .video-category {
-      color: #ef4444;
-      font-size: 12px;
-      margin-top: 6px;
-    }
-
-    .video-link {
-      display: inline-block;
-      color: #999;
-      font-size: 12px;
-      margin-top: 6px;
-      text-decoration: none;
-    }
-
-    .video-link:hover { color: white; }
-
-    .empty {
-      color: #888;
-      font-size: 13px;
-      padding: 10px 0;
-    }
-
-    .back-link {
-      display: inline-block;
-      color: #ef4444;
-      text-decoration: none;
-      font-size: 13px;
-      margin-top: 12px;
-    }
-
-    @media(max-width: 600px) {
-      .panel { padding: 18px; }
-      h1 { font-size: 22px; }
-      .video-item { align-items: flex-start; }
-    }
-  </style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;padding:35px 16px;font-family:Arial,sans-serif;background:#080808;color:#fff}
+.container{width:100%;max-width:900px;margin:auto}
+.header{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:25px}
+h1{font-size:26px}h1 span{color:#ef2929}
+.subtitle{color:#999;font-size:13px;margin-top:7px}
+.panel{background:#121212;border:1px solid #292929;border-radius:12px;padding:25px;margin-bottom:20px}
+h2{font-size:18px;margin-bottom:20px}
+.field{margin-bottom:15px}
+label{display:block;color:#aaa;font-size:13px;margin-bottom:7px}
+input,select{width:100%;padding:13px;border:1px solid #333;border-radius:7px;background:#1b1b1b;color:#fff;outline:none;font-size:14px}
+input:focus,select:focus{border-color:#ed2929}
+button{border:0;border-radius:7px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer}
+.primary{width:100%;background:#ed2929;color:white}
+.primary:hover{background:#c91e1e}
+.logout{background:#292929;color:white}
+.delete{background:#b91c1c;color:white;padding:8px 12px;font-size:12px}
+.hidden{display:none!important}
+#status{margin-top:15px;font-size:13px;overflow-wrap:anywhere}
+.video-item{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:15px 0;border-bottom:1px solid #292929}
+.video-info{min-width:0}
+.video-title{font-size:14px;font-weight:bold;overflow-wrap:anywhere}
+.video-category{color:#ef4444;font-size:12px;margin-top:6px}
+.video-link{display:inline-block;color:#999;font-size:12px;margin-top:6px;text-decoration:none}
+.video-link:hover{color:white}
+.empty{color:#888;font-size:13px;padding:10px 0}
+.back-link{display:inline-block;color:#ef4444;text-decoration:none;font-size:13px;margin-top:12px}
+@media(max-width:600px){.panel{padding:18px}h1{font-size:22px}.video-item{align-items:flex-start}}
+</style>
 </head>
 
 <body>
-  <main class="container">
-
-    <div class="header">
-      <div>
-        <h1>THE SPY <span>WEBER</span></h1>
-        <p class="subtitle">Video Production — Admin Dashboard</p>
-      </div>
-      <button id="logoutBtn" class="logout hidden">Logout</button>
-    </div>
-
-    <!-- LOGIN -->
-    <section id="loginSection" class="panel">
-      <h2>Admin Login</h2>
-
-      <div class="field">
-        <label>Email</label>
-        <input id="email" type="email" placeholder="Admin email">
-      </div>
-
-      <div class="field">
-        <label>Password</label>
-        <input id="password" type="password" placeholder="Password">
-      </div>
-
-      <button id="loginBtn" class="primary">Login to Admin Panel</button>
-    </section>
-
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="hidden">
-
-      <div class="panel">
-        <h2>Add New Video</h2>
-
-        <div class="field">
-          <label>Video Title</label>
-          <input id="title" type="text" placeholder="Enter video title">
-        </div>
-
-        <div class="field">
-          <label>Video Category</label>
-          <select id="sector">
-            <option value="headtalk">Headtalk</option>
-            <option value="promo">Promo</option>
-            <option value="re-promo">Re-Promo</option>
-            <option value="re-pro">Re-Pro</option>
-            <option value="ai-editor">AI Editor</option>
-            <option value="cinematic">Cinematic</option>
-            <option value="motion">Motion</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>YouTube Video Link</label>
-          <input id="youtube" type="url"
-            placeholder="https://www.youtube.com/watch?v=VIDEO_ID">
-        </div>
-
-        <button id="addBtn" class="primary">Add Video</button>
-        <p id="status" role="status"></p>
-      </div>
-
-      <div class="panel">
-        <h2>Uploaded Videos</h2>
-        <div id="videoList">
-          <p class="empty">Loading videos...</p>
-        </div>
-      </div>
-
-    </section>
-
-    <a class="back-link" href="../">← Back to Website</a>
-
-  </main>
-
-  <script>
-    const SUPABASE_URL = "https://hnninqcqlsxiobbpbtmg.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_OZiYM9UVLlQTysV_j3HbUQ_5YiWvEcf";
-
-    const db = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-
-    const $ = id => document.getElementById(id);
-
-    function message(text, error = false) {
-      $("status").textContent = text;
-      $("status").style.color = error ? "#ff7777" : "#4ade80";
-    }
-
-    function getYoutubeId(value) {
-      try {
-        const url = new URL(value.trim());
-
-        let id = "";
-
-        if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") {
-          id = url.pathname.split("/").filter(Boolean)[0] || "";
-        } else if (
-          url.hostname === "youtube.com" ||
-          url.hostname === "www.youtube.com" ||
-          url.hostname === "m.youtube.com" ||
-          url.hostname === "youtube-nocookie.com" ||
-          url.hostname === "www.youtube-nocookie.com"
-        ) {
-          if (url.pathname === "/watch") {
-            id = url.searchParams.get("v") || "";
-          } else {
-            const parts = url.pathname.split("/").filter(Boolean);
-            if (["embed", "shorts", "live"].includes(parts[0])) {
-              id = parts[1] || "";
-            }
-          }
-        }
-
-        return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
-      } catch {
-        return null;
-      }
-    }
-
-    function showScreen(session) {
-      $("loginSection").classList.toggle("hidden", !!session);
-      $("dashboard").classList.toggle("hidden", !session);
-      $("logoutBtn").classList.toggle("hidden", !session);
-
-      if (session) loadVideos();
-    }
-
-    async function checkSession() {
-      const { data, error } = await db.auth.getSession();
-
-      if (error) {
-        message(error.message, true);
-        return;
-      }
-
-      showScreen(data.session);
-    }
-
-    $("loginBtn").addEventListener("click", async () => {
-      const email = $("email").value.trim();
-      const password = $("password").value;
-
-      if (!email || !password) {
-        alert("Enter your email and password.");
-        return;
-      }
-
-      $("loginBtn").disabled = true;
-
-      const { error } = await db.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      $("loginBtn").disabled = false;
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      $("password").value = "";
-      await checkSession();
-    });
-
-    $("password").addEventListener("keydown", event => {
-      if (event.key === "Enter") $("loginBtn").click();
-    });
-
-    $("logoutBtn").addEventListener("click", async () => {
-      const { error } = await db.auth.signOut();
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      showScreen(null);
-    });
-
-    async function loadVideos() {
-      $("videoList").innerHTML =
-        '<p class="empty">Loading videos...</p>';
-
-      const { data, error } = await db
-        .from("spyweber_videos")
-        .select("id,title,sector,youtube_id,created_at")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        $("videoList").textContent =
-          "Could not load videos: " + error.message;
-        return;
-      }
-
-      $("videoList").replaceChildren();
-
-      if (!data || data.length === 0) {
-        $("videoList").innerHTML =
-          '<p class="empty">No videos added yet.</p>';
-        return;
-      }
-
-      data.forEach(video => {
-        const item = document.createElement("div");
-        item.className = "video-item";
-
-        const info = document.createElement("div");
-        info.className = "video-info";
-
-        const title = document.createElement("div");
-        title.className = "video-title";
-        title.textContent = video.title;
-
-        const category = document.createElement("div");
-        category.className = "video-category";
-        category.textContent = video.sector;
-
-        const link = document.createElement("a");
-        link.className = "video-link";
-        link.href = "https://www.youtube.com/watch?v=" +
-          encodeURIComponent(video.youtube_id);
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = "Watch on YouTube";
-
-        info.append(title, category, link);
-
-        const remove = document.createElement("button");
-        remove.className = "delete";
-        remove.textContent = "Delete";
-
-        remove.addEventListener("click", () => deleteVideo(video.id));
-
-        item.append(info, remove);
-        $("videoList").append(item);
-      });
-    }
-
-    $("addBtn").addEventListener("click", async () => {
-      const button = $("addBtn");
-      const title = $("title").value.trim();
-      const sector = $("sector").value;
-      const youtubeId = getYoutubeId($("youtube").value);
-
-      if (!title) {
-        message("Please enter a video title.", true);
-        return;
-      }
-
-      if (!youtubeId) {
-        message("Please enter a valid YouTube video link.", true);
-        return;
-      }
-
-      button.disabled = true;
-      message("Adding video...");
-
-      try {
-        const { data: sessionData, error: sessionError } =
-          await db.auth.getSession();
-
-        if (sessionError) throw sessionError;
-        if (!sessionData.session) throw new Error("Please login first.");
-
-        const { error } = await db
-          .from("spyweber_videos")
-          .insert({
-            title: title,
-            sector: sector,
-            youtube_id: youtubeId
-          });
-
-        if (error) throw error;
-
-        $("title").value = "";
-        $("youtube").value = "";
-
-        message("Video added successfully!");
-        await loadVideos();
-
-      } catch (error) {
-        message(error.message || "Could not add video.", true);
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    async function deleteVideo(id) {
-      if (!confirm("Are you sure you want to delete this video?")) return;
-
-      const { error } = await db
-        .from("spyweber_videos")
-        .delete()
-        .eq("id", id);
-
-      if (error) {
-        alert("Delete failed: " + error.message);
-        return;
-      }
-
-      message("Video deleted successfully.");
-      await loadVideos();
-    }
-
-    db.auth.onAuthStateChange((_event, session) => {
-      showScreen(session);
-    });
-
-    checkSession();
-  </script>
+<main class="container">
+
+<div class="header">
+<div>
+<h1>THE SPY <span>WEBER</span></h1>
+<p class="subtitle">Video Production — Admin Dashboard</p>
+</div>
+<button id="logoutBtn" class="logout hidden">Logout</button>
+</div>
+
+<section id="loginSection" class="panel">
+<h2>Admin Login</h2>
+<div class="field">
+<label>Email</label>
+<input id="email" type="email" placeholder="Admin email">
+</div>
+<div class="field">
+<label>Password</label>
+<input id="password" type="password" placeholder="Password">
+</div>
+<button id="loginBtn" class="primary">Login to Admin Panel</button>
+</section>
+
+<section id="dashboard" class="hidden">
+
+<div class="panel">
+<h2>Add New Video</h2>
+
+<div class="field">
+<label>Video Title</label>
+<input id="title" type="text" placeholder="Enter video title">
+</div>
+
+<div class="field">
+<label>Video Category</label>
+<select id="sector">
+<option value="headtalk">Headtalk</option>
+<option value="promo">Promo</option>
+<option value="re-promo">Re-Promo</option>
+<option value="re-pro">Re-Pro</option>
+<option value="ai-editor">AI Editor</option>
+<option value="cinematic">Cinematic</option>
+<option value="motion">Motion</option>
+</select>
+</div>
+
+<div class="field">
+<label>YouTube Video Link</label>
+<input id="youtube" type="url" placeholder="https://www.youtube.com/watch?v=VIDEO_ID">
+</div>
+
+<button id="addBtn" class="primary">Add Video</button>
+<p id="status" role="status"></p>
+</div>
+
+<div class="panel">
+<h2>Uploaded Videos</h2>
+<div id="videoList">
+<p class="empty">Loading videos...</p>
+</div>
+</div>
+
+</section>
+
+<a class="back-link" href="../">← Back to Website</a>
+</main>
+
+<script>
+const SUPABASE_URL = "https://hnninqcqlsxiobbpbtmg.supabase.co";
+const SUPABASE_KEY = "sb_publishable_OZiYM9UVLlQTysV_j3HbUQ_5YiWvEcf";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+
+function message(text,error=false){
+$("status").textContent=text;
+$("status").style.color=error?"#ff7777":"#4ade80";
+}
+
+function getYoutubeId(value){
+try{
+const url=new URL(value.trim());
+let id="";
+
+if(url.hostname==="youtu.be"||url.hostname==="www.youtu.be"){
+id=url.pathname.split("/").filter(Boolean)[0]||"";
+}
+else if(["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(url.hostname)){
+if(url.pathname==="/watch"){
+id=url.searchParams.get("v")||"";
+}else{
+const parts=url.pathname.split("/").filter(Boolean);
+if(["embed","shorts","live"].includes(parts[0]))id=parts[1]||"";
+}
+}
+
+return /^[a-zA-Z0-9_-]{11}$/.test(id)?id:null;
+}catch{return null;}
+}
+
+function showScreen(session){
+$("loginSection").classList.toggle("hidden",!!session);
+$("dashboard").classList.toggle("hidden",!session);
+$("logoutBtn").classList.toggle("hidden",!session);
+if(session)loadVideos();
+}
+
+async function checkSession(){
+const {data,error}=await db.auth.getSession();
+if(error){message(error.message,true);return;}
+showScreen(data.session);
+}
+
+$("loginBtn").addEventListener("click",async()=>{
+const email=$("email").value.trim();
+const password=$("password").value;
+
+if(!email||!password){
+alert("Enter your email and password.");
+return;
+}
+
+$("loginBtn").disabled=true;
+const {error}=await db.auth.signInWithPassword({email,password});
+$("loginBtn").disabled=false;
+
+if(error){alert(error.message);return;}
+
+$("password").value="";
+await checkSession();
+});
+
+$("password").addEventListener("keydown",event=>{
+if(event.key==="Enter")$("loginBtn").click();
+});
+
+$("logoutBtn").addEventListener("click",async()=>{
+const {error}=await db.auth.signOut();
+if(error){alert(error.message);return;}
+showScreen(null);
+});
+
+async function loadVideos(){
+$("videoList").innerHTML='<p class="empty">Loading videos...</p>';
+
+const {data,error}=await db.from("spyweber_videos")
+.select("id,title,sector,youtube_id,created_at")
+.order("created_at",{ascending:false});
+
+if(error){
+$("videoList").textContent="Could not load videos: "+error.message;
+return;
+}
+
+$("videoList").replaceChildren();
+
+if(!data||data.length===0){
+$("videoList").innerHTML='<p class="empty">No videos added yet.</p>';
+return;
+}
+
+data.forEach(video=>{
+const item=document.createElement("div");
+item.className="video-item";
+
+const info=document.createElement("div");
+info.className="video-info";
+
+const title=document.createElement("div");
+title.className="video-title";
+title.textContent=video.title;
+
+const category=document.createElement("div");
+category.className="video-category";
+category.textContent=video.sector;
+
+const link=document.createElement("a");
+link.className="video-link";
+link.href="https://www.youtube.com/watch?v="+encodeURIComponent(video.youtube_id);
+link.target="_blank";
+link.rel="noopener noreferrer";
+link.textContent="Watch on YouTube";
+
+info.append(title,category,link);
+
+const remove=document.createElement("button");
+remove.className="delete";
+remove.textContent="Delete";
+remove.addEventListener("click",()=>deleteVideo(video.id));
+
+item.append(info,remove);
+$("videoList").append(item);
+});
+}
+
+$("addBtn").addEventListener("click",async()=>{
+const button=$("addBtn");
+const title=$("title").value.trim();
+const sector=$("sector").value;
+const youtubeId=getYoutubeId($("youtube").value);
+
+if(!title){message("Please enter a video title.",true);return;}
+if(!youtubeId){message("Please enter a valid YouTube video link.",true);return;}
+
+button.disabled=true;
+message("Adding video...");
+
+try{
+const {data:sessionData,error:sessionError}=await db.auth.getSession();
+if(sessionError)throw sessionError;
+if(!sessionData.session)throw new Error("Please login first.");
+
+const {error}=await db.from("spyweber_videos").insert({
+title:title,
+sector:sector,
+youtube_id:youtubeId
+});
+
+if(error)throw error;
+
+$("title").value="";
+$("youtube").value="";
+message("Video added successfully!");
+await loadVideos();
+
+}catch(error){
+message(error.message||"Could not add video.",true);
+}finally{
+button.disabled=false;
+}
+});
+
+async function deleteVideo(id){
+if(!confirm("Are you sure you want to delete this video?"))return;
+
+const {error}=await db.from("spyweber_videos").delete().eq("id",id);
+
+if(error){alert("Delete failed: "+error.message);return;}
+
+message("Video deleted successfully.");
+await loadVideos();
+}
+
+db.auth.onAuthStateChange((_event,session)=>{
+showScreen(session);
+});
+
+checkSession();
+</script>
 </body>
 </html>
