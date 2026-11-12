@@ -88,8 +88,22 @@ button{border:0;border-radius:7px;padding:12px 18px;font-size:14px;font-weight:7
 
 <div class="field">
 <label>YouTube Video Link</label>
+
 <input id="youtube" type="url" placeholder="https://www.youtube.com/watch?v=VIDEO_ID">
 </div>
+
+<div class="field">
+  <label for="ratio">Video Ratio</label>
+  <select id="ratio">
+    <option value="auto" selected>Auto (Default)</option>
+    <option value="16:9">16:9 - Landscape</option>
+    <option value="9:16">9:16 - Portrait</option>
+    <option value="1:1">1:1 - Square</option>
+    <option value="4:3">4:3 - Classic</option>
+    <option value="21:9">21:9 - Cinematic</option>
+  </select>
+</div>
+
 
 <button id="addBtn" class="primary">Add Video</button>
 <p id="status" role="status"></p>
