@@ -214,21 +214,35 @@ function renderSectors() {
       if (!list.length) {
         content.append(el("div", "empty", "No videos in this category yet."));
       } else {
-        const grid = el("div", "grid");
-        list.forEach(video => {
-          const card = el("div", "vid");
-          const ratio = el("div", "ratio");
-          const frame = document.createElement("iframe");
-          frame.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(video.youtube_id);
-          frame.title = video.title || "Video";
-          frame.loading = "lazy";
-          frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-          frame.allowFullscreen = true;
-          ratio.append(frame);
-          card.append(ratio, el("div", "t", video.title || "Untitled"));
-          grid.append(card);
-        });
-        content.append(grid);
+       
+const grid = el("div", "grid");
+
+list.forEach(video => {
+  const card = el("div", "vid");
+  const ratio = el("div", "ratio");
+
+  const thumbnail = document.createElement("img");
+  thumbnail.src = "https://img.youtube.com/vi/" +
+    encodeURIComponent(video.youtube_id) + "/hqdefault.jpg";
+  thumbnail.alt = video.title || "Video thumbnail";
+  thumbnail.loading = "lazy";
+  thumbnail.style.cssText =
+    "width:100%;height:100%;object-fit:cover;cursor:pointer;";
+
+  const play = el("div", "play", "▶");
+  play.style.cssText =
+    "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:35px;color:white;pointer-events:none;";
+
+  ratio.style.position = "relative";
+  ratio.append(thumbnail, play);
+
+  ratio.addEventListener("click", () => openVideo(video));
+
+  card.append(ratio, el("div", "t", video.title || "Untitled"));
+  grid.append(card);
+});
+
+content.append(grid);
       }
     }
     box.append(head, content);
