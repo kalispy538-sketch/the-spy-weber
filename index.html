@@ -237,29 +237,58 @@ list.forEach(video => {
   ratio.append(thumbnail, play);
 
  
-ratio.addEventListener("click", () => {
-  const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;inset:0;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;padding:65px 12px 15px;";
 
-  const back = document.createElement("button");
-  back.textContent = "← Back";
-  back.style.cssText = "position:absolute;top:15px;left:15px;padding:12px 22px;background:#ed2929;color:white;border:0;border-radius:7px;font-size:16px;z-index:2;";
+let previewFrame = null;
+let isPlaying = false;
 
-  const frame = document.createElement("iframe");
-  frame.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(video.youtube_id) + "?autoplay=1&playsinline=1&rel=0";
-  frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-  frame.allowFullscreen = true;
-  frame.style.cssText = "width:100%;height:100%;max-width:1200px;max-height:calc(100vh - 90px);border:0;";
+function startPreview() {
+  if (previewFrame) return;
 
-  back.onclick = () => {
-    overlay.remove();
-    document.body.style.overflow = "";
-  };
+  previewFrame = document.createElement("iframe");
+  previewFrame.src =
+    "https://www.youtube-nocookie.com/embed/" +
+    encodeURIComponent(video.youtube_id) +
+    "?autoplay=1&playsinline=1&controls=1&rel=0";
 
-  overlay.append(back, frame);
-  document.body.append(overlay);
-  document.body.style.overflow = "hidden";
+  previewFrame.allow = "autoplay; encrypted-media; picture-in-picture";
+  previewFrame.style.cssText =
+    "position:absolute;inset:0;width:100%;height:100%;border:0;";
+
+  ratio.replaceChildren(previewFrame);
+  isPlaying = true;
+}
+
+function stopPreview() {
+  if (!previewFrame) return;
+
+  previewFrame.src = "about:blank";
+  previewFrame.remove();
+  previewFrame = null;
+
+  ratio.replaceChildren(thumbnail, play);
+  isPlaying = false;
+}
+
+ratio.addEventListener("mouseenter", () => {
+  if (window.matchMedia("(hover: hover)").matches) {
+    startPreview();
+  }
 });
+
+ratio.addEventListener("mouseleave", () => {
+  if (window.matchMedia("(hover: hover)").matches) {
+    stopPreview();
+  }
+});
+
+ratio.addEventListener("click", () => {
+  if (isPlaying) {
+    stopPreview();
+  } else {
+    startPreview();
+  }
+});
+
 
 
   card.append(ratio, el("div", "t", video.title || "Untitled"));
