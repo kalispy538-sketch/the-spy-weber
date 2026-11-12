@@ -88,22 +88,20 @@ button{border:0;border-radius:7px;padding:12px 18px;font-size:14px;font-weight:7
 
 <div class="field">
 <label>YouTube Video Link</label>
-
 <input id="youtube" type="url" placeholder="https://www.youtube.com/watch?v=VIDEO_ID">
 </div>
 
 <div class="field">
-  <label for="ratio">Video Ratio</label>
-  <select id="ratio">
-    <option value="auto" selected>Auto (Default)</option>
-    <option value="16:9">16:9 - Landscape</option>
-    <option value="9:16">9:16 - Portrait</option>
-    <option value="1:1">1:1 - Square</option>
-    <option value="4:3">4:3 - Classic</option>
-    <option value="21:9">21:9 - Cinematic</option>
-  </select>
+<label for="ratio">Video Ratio</label>
+<select id="ratio">
+<option value="auto" selected>Auto (Default)</option>
+<option value="16:9">16:9 - Landscape</option>
+<option value="9:16">9:16 - Portrait</option>
+<option value="1:1">1:1 - Square</option>
+<option value="4:3">4:3 - Classic</option>
+<option value="21:9">21:9 - Cinematic</option>
+</select>
 </div>
-
 
 <button id="addBtn" class="primary">Add Video</button>
 <p id="status" role="status"></p>
@@ -254,6 +252,7 @@ const button=$("addBtn");
 const title=$("title").value.trim();
 const sector=$("sector").value;
 const youtubeId=getYoutubeId($("youtube").value);
+const videoRatio=$("ratio").value;
 
 if(!title){message("Please enter a video title.",true);return;}
 if(!youtubeId){message("Please enter a valid YouTube video link.",true);return;}
@@ -269,13 +268,16 @@ if(!sessionData.session)throw new Error("Please login first.");
 const {error}=await db.from("spyweber_videos").insert({
 title:title,
 sector:sector,
-youtube_id:youtubeId
+youtube_id:youtubeId,
+video_ratio:videoRatio
 });
 
 if(error)throw error;
 
 $("title").value="";
 $("youtube").value="";
+$("ratio").value="auto";
+
 message("Video added successfully!");
 await loadVideos();
 
